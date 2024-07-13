@@ -1,1 +1,6 @@
-/tests/
+.idea/
+.DS_Store
+/boot
+/custom/
+config.yml
+/http/

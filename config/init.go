@@ -1,5 +1,3 @@
 package config
 
-func init() {
-	
-}
+var Extend = []string{"xml", "yaml", "json", "yml"}
