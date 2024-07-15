@@ -6,6 +6,7 @@ import (
 	`os`
 	`strings`
 	
+	`github.com/chaodoing/boot/cache`
 	`github.com/chaodoing/boot/config`
 	`github.com/chaodoing/boot/container`
 	`github.com/chaodoing/boot/o`
@@ -13,6 +14,7 @@ import (
 	`github.com/kataras/iris/v12/hero`
 	`github.com/kataras/iris/v12/middleware/logger`
 	`github.com/kataras/iris/v12/middleware/recover`
+	`gorm.io/gorm`
 )
 
 type (
@@ -21,6 +23,9 @@ type (
 		containers container.Container
 		config     iris.Configuration
 		env        config.Config
+		db         *gorm.DB
+		cache      *cache.Cache
+		group      *cache.Group
 	}
 	Handle func(app *iris.Application, containers container.Container)
 )
@@ -49,11 +54,16 @@ func New(file string) Launch {
 	env = env.LoadEnv()
 	
 	dock := container.New(env)
+	db, err := dock.Database()
+	if err != nil {
+		panic(err)
+	}
 	hero.Register(dock)
 	app := iris.New()
 	app.UseGlobal(iris.Compression)
 	app.UseRouter(recover.New())
 	app.UseRouter(logger.New())
+	app.RegisterDependency(dock, db)
 	o.Handle(app)
 	if env.Service.Cross {
 		app.AllowMethods(iris.MethodOptions)
@@ -69,12 +79,18 @@ func New(file string) Launch {
 		app:        app,
 		containers: dock,
 		env:        env,
+		db:         db,
 	}
 }
 func (l Launch) IrisConfiguration(config iris.Configuration) Launch {
 	l.config = config
 	return l
 }
+
+func (l Launch) DB() *gorm.DB {
+	return l.db
+}
+
 func (l Launch) Handle(values ...Handle) Launch {
 	for _, fn := range values {
 		fn(l.app, l.containers)

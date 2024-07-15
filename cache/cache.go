@@ -2,6 +2,8 @@ package cache
 
 import (
 	`errors`
+	`fmt`
+	`strings`
 	`time`
 	
 	`github.com/go-redis/redis`
@@ -12,6 +14,18 @@ type Cache struct {
 	redisConfig *Config
 	rdx         *redis.Client
 	prefix      string
+}
+
+// All 返回当前分组下所有键值对。
+// 它通过匹配前缀来获取键值，并移除键的前缀以得到最终的结果。
+func (g *Cache) All() map[string]string {
+	var result = map[string]string{}
+	names := g.rdx.Keys(fmt.Sprintf("%s:*", g.prefix)).Val()
+	key := fmt.Sprintf("%s:", g.prefix)
+	for _, name := range names {
+		result[strings.TrimPrefix(name, key)] = g.rdx.Get(name).Val()
+	}
+	return result
 }
 
 // redis 用于初始化 Redis 连接，并检查连接是否成功。

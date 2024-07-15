@@ -6,30 +6,11 @@ import (
 )
 
 type Model struct {
-	DB     *gorm.DB `gorm:"-" json:"-" xml:"-" yaml:"-"`
-	Offset int      `gorm:"-" json:"-" xml:"-" yaml:"-"`
-	Limit  int      `gorm:"-" json:"-" xml:"-" yaml:"-"`
-	Total  int64    `gorm:"-" json:"-" xml:"-" yaml:"-"`
-}
-
-// Query 根据URL参数设置分页信息，用于数据库查询操作。
-// 该方法提取了page和limit参数，这些参数通常用于实现分页功能。
-// 如果URL中未明确提供这些参数，将使用默认值。
-//
-// 参数:
-//   ctx - iris上下文，用于获取URL参数。
-//
-// 返回值:
-//   Model - 返回指向Model实例的指针，该实例已设置分页参数。
-func (m Model) Query(ctx iris.Context) Model {
-	// 从URL参数中尝试获取页码，优先使用page参数，如果未提供，则使用current参数，两者都未提供则默认为1。
-	var page = ctx.URLParamIntDefault("page", ctx.URLParamIntDefault("current", 1))
-	// 从URL参数中尝试获取每页的项数，优先使用limit参数，如果未提供，则使用size参数，两者都未提供则默认为15。
-	m.Limit = ctx.URLParamIntDefault("limit", ctx.URLParamIntDefault("size", 15))
-	// 计算偏移量，用于数据库查询的OFFSET子句，确保页码从1开始。
-	m.Offset = (page - 1) * m.Limit
-	// 返回设置了分页参数的Model实例。
-	return m
+	DB      *gorm.DB `gorm:"-" json:"-" xml:"-" yaml:"-"`
+	Offset  int      `gorm:"-" json:"-" xml:"-" yaml:"-"`
+	Limit   int      `gorm:"-" json:"-" xml:"-" yaml:"-"`
+	Total   int64    `gorm:"-" json:"-" xml:"-" yaml:"-"`
+	Current int      `gorm:"-" json:"-" xml:"-" yaml:"-"`
 }
 
 // Pagination 实现分页查询。
@@ -41,15 +22,21 @@ func (m Model) Query(ctx iris.Context) Model {
 //
 // 返回值:
 //   error: 查询过程中可能发生的错误。
-func (m Model) Pagination(data interface{}) (err error) {
+func (m Model) Pagination(ctx iris.Context, table string) (tx *gorm.DB, err error) {
+	// 从URL参数中尝试获取页码，优先使用page参数，如果未提供，则使用current参数，两者都未提供则默认为1。
+	m.Current = ctx.URLParamIntDefault("page", ctx.URLParamIntDefault("current", 1))
+	// 从URL参数中尝试获取每页的项数，优先使用limit参数，如果未提供，则使用size参数，两者都未提供则默认为15。
+	m.Limit = ctx.URLParamIntDefault("limit", ctx.URLParamIntDefault("size", 15))
+	// 计算偏移量，用于数据库查询的OFFSET子句，确保页码从1开始。
+	m.Offset = (m.Current - 1) * m.Limit
+	
 	// 统计满足条件的总记录数，用于后续的分页计算。
-	err = m.DB.Count(&m.Total).Error
+	err = m.DB.Table(table).Count(&m.Total).Error
 	if err != nil {
 		return
 	}
 	// 根据当前的偏移量和限制，查询满足条件的具体数据。
-	err = m.DB.Offset(m.Offset).Limit(m.Limit).Find(&data).Error
-	return
+	return m.DB.Table(table).Offset(m.Offset).Limit(m.Limit), nil
 }
 
 // Field 通过指定字段进行查询
