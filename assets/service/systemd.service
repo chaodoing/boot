@@ -1,5 +1,5 @@
 [Unit]
-Description={{.Description}}
+Description={{.description}}
 After=syslog.target
 After=network.target
 After=mysqld.service redis.service
@@ -9,14 +9,17 @@ After=mysqld.service redis.service
 ###
 # LimitMEMLOCK=infinity
 # LimitNOFILE=65535
+
 Type=simple
-User={{.Username}}
-Group={{.Group}}
-WorkingDirectory={{.Directory}}
-Environment=DIR={{.Directory}}
-Environment=ENV={{.Env}}
-Environment=VERSION={{.Version}}
-ExecStart={{.Execution}}
+User={{.username}}
+Group={{.group}}
+WorkingDirectory={{.directory}}
+Environment=WORKDIR={{.directory}}
+Environment=CONFIG_DIR={{.configDir}}
+Environment=LOG_DIR={{.logDir}}
+Environment=ENV={{.env}}
+Environment=VERSION={{.version}}
+ExecStart={{.execute}}
 Restart=always
 
 [Install]

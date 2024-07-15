@@ -1,6 +1,7 @@
 package config
 
 import (
+	`encoding/xml`
 	`os`
 	
 	`github.com/chaodoing/boot/cache`
@@ -32,8 +33,8 @@ type (
 type (
 	View struct {
 		Path         string `json:"path" xml:"path" yaml:"path" ini:"PATH" comment:"模板路径"`                                       // 模板路径
-		LeftDelimit  string `json:"leftDelimit" xml:"left-delimit" yaml:"leftDelimit" ini:"LEFT_DELIMIT" comment:"模板左定界符"`     // 模板左定界符
-		RightDelimit string `json:"rightDelimit" xml:"right-delimit" yaml:"rightDelimit" ini:"RIGHT_DELIMIT" comment:"模板右定界符"` // 模板右定界符
+		LeftDelimit  string `json:"leftDelimit" xml:"delimit>left" yaml:"leftDelimit" ini:"LEFT_DELIMIT" comment:"模板左定界符"`     // 模板左定界符
+		RightDelimit string `json:"rightDelimit" xml:"delimit>right" yaml:"rightDelimit" ini:"RIGHT_DELIMIT" comment:"模板右定界符"` // 模板右定界符
 		Layout       string `json:"layout" xml:"layout" yaml:"layout" ini:"LAYOUT" comment:"模板布局"`                               // 默认模板布局
 		Extension    string `json:"extension" xml:"extension" yaml:"extension" ini:"EXTENSION" comment:"模板后缀"`                   // 模板后缀
 	}
@@ -44,6 +45,7 @@ type (
 		Password string `json:"password" xml:"password" yaml:"password" ini:"PASSWORD" comment:"Redis密码"` // Redis密码
 	}
 	Config struct {
+		XMLName  xml.Name        `xml:"root" json:"-" yaml:"-" ini:"-"`
 		Service  Service         `json:"service" xml:"service" yaml:"service" ini:"SERVICE" comment:"网站服务配置"`
 		Uploader Uploader        `json:"uploader" xml:"uploader" yaml:"uploader" ini:"UPLOADER" comment:"资源上传配置"`
 		Database database.Config `json:"database" xml:"database" yaml:"database" ini:"DATABASE" comment:"数据库配置"`

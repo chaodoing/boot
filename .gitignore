@@ -7,3 +7,7 @@ config.yml
 models/
 model/
 logs/
+build/
+/.env.development
+/.env.*
+main.go
