@@ -17,9 +17,9 @@ import (
 
 func init() {
 	envutil.SetEnvMap(map[string]string{
-		"WORKDIR":    os.ExpandEnv("${PWD}"),
-		"CONFIG_DIR": os.ExpandEnv("${PWD}/custom"),
-		"LOG_DIR":    os.ExpandEnv("${PWD}/logs"),
+		"WORKDIR":    envutil.Getenv("WORKDIR", os.ExpandEnv("${PWD}")),
+		"CONFIG_DIR": envutil.Getenv("CONFIG_DIR", os.ExpandEnv("${PWD}/custom")),
+		"LOG_DIR":    envutil.Getenv("LOG_DIR", os.ExpandEnv("${PWD}/logs")),
 		"ENV":        "development",
 		"VERSION":    "v1.0.0",
 	})

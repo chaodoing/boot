@@ -6,3 +6,4 @@ config.yml
 /http/
 models/
 model/
+logs/
