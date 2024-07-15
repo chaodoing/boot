@@ -58,12 +58,20 @@ func New(file string) Launch {
 	if err != nil {
 		panic(err)
 	}
+	caching, err := dock.Cache()
+	if err != nil {
+		panic(err)
+	}
+	group, err := dock.Group()
+	if err != nil {
+		panic(err)
+	}
 	hero.Register(dock)
 	app := iris.New()
 	app.UseGlobal(iris.Compression)
 	app.UseRouter(recover.New())
 	app.UseRouter(logger.New())
-	app.RegisterDependency(dock, db)
+	app.RegisterDependency(dock, db, caching, group)
 	o.Handle(app)
 	if env.Service.Cross {
 		app.AllowMethods(iris.MethodOptions)
@@ -80,6 +88,8 @@ func New(file string) Launch {
 		containers: dock,
 		env:        env,
 		db:         db,
+		cache:      caching,
+		group:      group,
 	}
 }
 func (l Launch) IrisConfiguration(config iris.Configuration) Launch {
