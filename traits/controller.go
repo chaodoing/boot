@@ -7,6 +7,7 @@ import (
 )
 
 type Controller struct {
+	Ctx iris.Context
 }
 
 func (c *Controller) BeforeActivation(m mvc.BeforeActivation) {}

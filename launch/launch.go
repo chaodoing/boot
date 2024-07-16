@@ -39,8 +39,8 @@ func New(file string) Launch {
 		err error
 	)
 	file = os.ExpandEnv(file)
-	ss := strings.Split(file, ".")
-	switch ss[len(ss)-1] {
+	exts := strings.Split(file, ".")
+	switch exts[len(exts)-1] {
 	case "json":
 		env, err = config.Json(file)
 	case "yaml", "yml":
@@ -52,7 +52,6 @@ func New(file string) Launch {
 		panic(err)
 	}
 	env = env.LoadEnv()
-	
 	dock := container.New(env)
 	db, err := dock.Database()
 	if err != nil {

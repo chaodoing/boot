@@ -62,7 +62,9 @@ func INIWriter(data Config) (err error) {
 	if err != nil {
 		return err
 	}
-	defer fileEnv.Close()
+	defer func() {
+		_ = fileEnv.Close()
+	}()
 	// 将配置保存到通用环境配置文件中
 	// 使用os.ExpandEnv替换环境变量，确保文件路径的正确性
 	err = env.SaveTo(fileName)
@@ -74,7 +76,9 @@ func INIWriter(data Config) (err error) {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 	// 将配置保存到特定环境配置文件中
 	// 这允许根据不同的环境（如开发、测试、生产）使用不同的配置
 	err = env.SaveTo(fileName)
