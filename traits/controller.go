@@ -6,9 +6,7 @@ import (
 	`github.com/kataras/iris/v12/mvc`
 )
 
-type Controller struct {
-	Ctx iris.Context
-}
+type Controller struct{}
 
 func (c *Controller) BeforeActivation(m mvc.BeforeActivation) {}
 
