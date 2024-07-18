@@ -27,7 +27,7 @@ type (
 		cache      *cache.Cache
 		group      *cache.Group
 	}
-	Handle func(app *iris.Application, containers container.Container)
+	Handle func(app *iris.Application, containers container.Container, db *gorm.DB, jwt *container.Jwt)
 )
 
 func New(file string) Launch {
@@ -102,7 +102,7 @@ func (l Launch) DB() *gorm.DB {
 
 func (l Launch) Handle(values ...Handle) Launch {
 	for _, fn := range values {
-		fn(l.app, l.containers)
+		fn(l.app, l.containers, l.db, l.containers.Jwt())
 	}
 	return l
 }
