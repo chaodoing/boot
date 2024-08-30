@@ -38,12 +38,6 @@ type (
 		Layout       string `json:"layout" xml:"layout" yaml:"layout" ini:"LAYOUT" comment:"模板布局"`                               // 默认模板布局
 		Extension    string `json:"extension" xml:"extension" yaml:"extension" ini:"EXTENSION" comment:"模板后缀"`                   // 模板后缀
 	}
-	Redis struct {
-		Host     string `json:"host" xml:"host" yaml:"host" ini:"HOST" comment:"Redis主机"`                 // Redis主机
-		Port     uint16 `json:"port" xml:"port" yaml:"port" ini:"PORT" comment:"Redis端口"`                 // Redis端口
-		Index    int    `json:"index" xml:"index" yaml:"index" ini:"INDEX" comment:"Redis索引"`             // Redis索引
-		Password string `json:"password" xml:"password" yaml:"password" ini:"PASSWORD" comment:"Redis密码"` // Redis密码
-	}
 	Config struct {
 		XMLName  xml.Name        `xml:"root" json:"-" yaml:"-" ini:"-"`
 		Service  Service         `json:"service" xml:"service" yaml:"service" ini:"SERVICE" comment:"网站服务配置"`

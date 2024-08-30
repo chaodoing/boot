@@ -13,6 +13,7 @@ func (c *Container) Jwt() *Jwt {
 		return c.jwt
 	}
 	c.jwt = NewJwt(c.Config.Jwt.Secret, time.Duration(c.Config.Jwt.Expire)*time.Second)
+	_ = c.Events.Trigger(`jwt`, c.jwt)
 	return c.jwt
 }
 
@@ -23,6 +24,7 @@ func (c *Container) Database() (*gorm.DB, error) {
 	}
 	var err error
 	c.db, err = c.Config.Database.Connection()
+	_ = c.Events.Trigger(`database`, c.db, err)
 	return c.db, err
 }
 
@@ -32,6 +34,7 @@ func (c *Container) Cache(prefixes ...string) (Cache *cache.Cache, err error) {
 		return c.cache, nil
 	}
 	c.cache, err = cache.New(&c.Config.Cache, prefixes...)
+	_ = c.Events.Trigger(`cache`, c.cache, err)
 	return c.cache, err
 }
 
@@ -41,5 +44,6 @@ func (c *Container) Group(name ...string) (Group *cache.Group, err error) {
 		return c.group, nil
 	}
 	c.group, err = cache.NewGroup(&c.Config.Cache, name...)
+	_ = c.Events.Trigger(`group`, c.group, err)
 	return c.group, err
 }
