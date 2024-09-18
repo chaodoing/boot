@@ -48,14 +48,14 @@ func (j *Jwt) ErrHandle(handle func(iris.Context, error)) *Jwt {
 	return j
 }
 
-// Middleware 返回一个JWT中间件，该中间件可用于验证和处理JWT令牌。
+// Jwt 返回一个JWT中间件，该中间件可用于验证和处理JWT令牌。
 //
 // 该方法使得Jwt结构体实例能够作为中间件提供给HTTP处理链，以便在请求处理过程中进行JWT令牌的验证和解析。
 // 返回的jwt.Middleware实例封装了JWT验证的具体逻辑，包括令牌的解析、验证和错误处理。
 //
 // 返回:
 //   *jwt.Middleware - JWT中间件实例，用于HTTP请求处理。
-func (j *Jwt) Middleware() *jwt.Middleware {
+func (j *Jwt) Jwt() *jwt.Middleware {
 	return j.jet
 }
 
