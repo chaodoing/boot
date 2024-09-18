@@ -7,9 +7,9 @@ require (
 	github.com/casbin/gorm-adapter/v3 v3.26.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/google/uuid v1.6.0
 	github.com/gookit/goutil v0.6.15
 	github.com/gookit/validate v1.5.2
-	github.com/iris-contrib/middleware/cors v0.0.0-20240502084239-34f27409ce72
 	github.com/iris-contrib/middleware/jwt v0.0.0-20240502084239-34f27409ce72
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/kataras/golog v0.1.11
@@ -53,7 +53,6 @@ require (
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20240328165702-4d01890c35c0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gookit/color v1.5.4 // indirect
 	github.com/gookit/filter v1.2.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
