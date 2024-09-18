@@ -121,7 +121,7 @@ func New(file string) Launch {
 	// 配置跨域
 	if env.Service.Cross {
 		app.AllowMethods(iris.MethodOptions)
-		app.UseGlobal(container.Cors)
+		app.UseRouter(container.Cors)
 	}
 	
 	// 配置日志输出
