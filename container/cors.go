@@ -17,7 +17,6 @@ var Cors = func(ctx iris.Context) {
 	ctx.Header("Version", "1.0.0")
 	ctx.Header("Author", "Neil")
 	ctx.Header("Email", "chaodoing@live.com")
-	fmt.Println(ctx.Method())
 	if ctx.Method() == http.MethodOptions {
 		ctx.StatusCode(204)
 		return
