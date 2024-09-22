@@ -5,6 +5,7 @@ import (
 	`os`
 	
 	`github.com/chaodoing/boot/cache`
+	`github.com/chaodoing/boot/captcha`
 	`github.com/chaodoing/boot/database`
 	`github.com/chaodoing/boot/logger`
 	`github.com/gookit/goutil/fsutil`
@@ -43,6 +44,7 @@ type (
 		Service  Service         `json:"service" xml:"service" yaml:"service" ini:"SERVICE" comment:"网站服务配置"`
 		Uploader Uploader        `json:"uploader" xml:"uploader" yaml:"uploader" ini:"UPLOADER" comment:"资源上传配置"`
 		Database database.Config `json:"database" xml:"database" yaml:"database" ini:"DATABASE" comment:"数据库配置"`
+		Captcha  captcha.Options `json:"captcha" xml:"captcha" yaml:"captcha" ini:"CAPTCHA" comment:"验证码配置"`
 		Cache    cache.Config    `json:"cache" xml:"cache" yaml:"cache" ini:"CACHE" comment:"缓存配置"`
 		Jwt      Jwt             `json:"jwt" xml:"jwt" yaml:"jwt" ini:"JWT" comment:"JWT配置"`
 	}
