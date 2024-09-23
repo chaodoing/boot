@@ -16,7 +16,7 @@ type (
 	}
 	Captcha struct {
 		driver  *base64Captcha.DriverDigit
-		store   base64Captcha.Store
+		store   Store
 		captcha *base64Captcha.Captcha
 	}
 )
@@ -43,8 +43,12 @@ func NewCaptcha(option Options, rdx *redis.Client) *Captcha {
 	return &Captcha{
 		driver:  driver,
 		store:   store,
-		captcha: base64Captcha.NewCaptcha(driver, store),
+		captcha: base64Captcha.NewCaptcha(driver, base64Captcha.Store(store)),
 	}
+}
+
+func (c *Captcha) Clear(key string) {
+	c.store.Get(key, true)
 }
 
 // Base64Image 生成并返回验证码的Base64编码字符串。

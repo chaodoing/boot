@@ -6,7 +6,6 @@ import (
 	"time"
 	
 	"github.com/go-redis/redis"
-	"github.com/mojocn/base64Captcha"
 )
 
 type Store struct {
@@ -22,6 +21,10 @@ func (s Store) Set(idKey string, value string) (err error) {
 	return
 }
 
+func (s Store) Clear(idKey string) error {
+	return s.rdx.Del(idKey).Err()
+}
+
 func (s Store) Get(idKey string, clear bool) (value string) {
 	var err error
 	value, err = s.rdx.Get(idKey).Result()
@@ -29,7 +32,7 @@ func (s Store) Get(idKey string, clear bool) (value string) {
 		log.Println(err)
 	}
 	if clear {
-		_, err := s.rdx.Del(idKey).Result()
+		err := s.Clear(idKey)
 		if err != nil {
 			log.Println(err)
 		}
@@ -44,14 +47,14 @@ func (s Store) Verify(idKey, value string, clear bool) bool {
 	return strings.EqualFold(verifyCode, value)
 }
 
-func NewStore(rdx *redis.Client, duration int64, prefix ...string) base64Captcha.Store {
+func NewStore(rdx *redis.Client, duration int64, prefix ...string) Store {
 	var index string
 	if len(prefix) > 0 {
 		index = prefix[0]
 	} else {
 		index = "captcha"
 	}
-	return &Store{
+	return Store{
 		Duration: time.Duration(duration),
 		rdx:      rdx,
 		prefix:   index,
