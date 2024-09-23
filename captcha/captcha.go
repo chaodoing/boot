@@ -47,8 +47,8 @@ func NewCaptcha(option Options, rdx *redis.Client) *Captcha {
 	}
 }
 
-func (c *Captcha) Clear(key string) {
-	c.store.Get(key, true)
+func (c *Captcha) Clear(key string) error {
+	return c.store.Clear(key)
 }
 
 // Base64Image 生成并返回验证码的Base64编码字符串。
