@@ -22,10 +22,12 @@ func (s Store) Set(idKey string, value string) (err error) {
 }
 
 func (s Store) Clear(idKey string) error {
+	idKey = s.prefix + ":" + idKey
 	return s.rdx.Del(idKey).Err()
 }
 
 func (s Store) Get(idKey string, clear bool) (value string) {
+	idKey = s.prefix + ":" + idKey
 	var err error
 	value, err = s.rdx.Get(idKey).Result()
 	if err != nil {
