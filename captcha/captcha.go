@@ -7,11 +7,12 @@ import (
 
 type (
 	Options struct {
-		Height   int     `json:"height" xml:"height" ini:"HEIGHT"`
-		Width    int     `json:"width" xml:"width" ini:"WIDTH"`
-		Length   int     `json:"length" xml:"length" ini:"LENGTH"`
-		MaxSkew  float64 `json:"max_skew" xml:"max_skew" ini:"MAX_SKEW"`
-		DotCount int     `json:"dot_count" xml:"dot_count" ini:"DOT_COUNT"`
+		Height   int     `json:"height" xml:"height" ini:"HEIGHT" comment:"图片高度"`
+		Width    int     `json:"width" xml:"width" ini:"WIDTH" comment:"图片宽度"`
+		Length   int     `json:"length" xml:"length" ini:"LENGTH" comment:"内容长度"`
+		MaxSkew  float64 `json:"max_skew" xml:"max_skew" ini:"MAX_SKEW" comment:"文字倾斜角度"`
+		DotCount int     `json:"dot_count" xml:"dot_count" ini:"DOT_COUNT" comment:"背景杂色点数量"`
+		InDate   int64   `json:"indate" xml:"indate" ini:"INDATE" comment:"验证码有效期单位:分钟"`
 	}
 	Captcha struct {
 		driver  *base64Captcha.DriverDigit
@@ -32,12 +33,11 @@ type (
 //
 // 返回值:
 //   *Captcha - 一个指向初始化后的验证码实例的指针。
-func NewCaptcha(option Options, rdx *redis.Client, indate int64) *Captcha {
+func NewCaptcha(option Options, rdx *redis.Client) *Captcha {
 	// 创建一个新的验证码驱动实例，用于生成数字验证码图片。
 	var driver = base64Captcha.NewDriverDigit(option.Height, option.Width, option.Length, option.MaxSkew, option.DotCount)
-	
 	// 创建一个新的验证码存储实例，使用Redis作为存储后端。
-	var store = NewStore(rdx, indate)
+	var store = NewStore(rdx, option.InDate)
 	
 	// 返回一个新的验证码实例，使用之前创建的驱动和存储层进行初始化。
 	return &Captcha{
@@ -54,7 +54,7 @@ func NewCaptcha(option Options, rdx *redis.Client, indate int64) *Captcha {
 // 返回的answer是验证码的正确答案，需要在验证时与用户输入进行对比。
 // 如果生成过程中发生错误，err将返回非nil值。
 func (c *Captcha) Base64Image() (id, image, answer string, err error) {
-	return c.captcha.Generate()
+	return base64Captcha.NewCaptcha(c.driver, c.store).Generate()
 }
 
 // Verify 验证码验证函数

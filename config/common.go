@@ -7,6 +7,7 @@ import (
 	`strings`
 	
 	`github.com/chaodoing/boot/cache`
+	`github.com/chaodoing/boot/captcha`
 	`github.com/chaodoing/boot/database`
 	`github.com/chaodoing/boot/logger`
 	`github.com/gookit/goutil/fsutil`
@@ -133,6 +134,14 @@ func Default() Config {
 		Jwt: Jwt{
 			Secret: "192.168.cc",  // JWT的签名密钥
 			Expire: 7 * 24 * 3600, // JWT的默认过期时间，单位为秒
+		},
+		Captcha: captcha.Options{
+			Height:   70,
+			Width:    200,
+			Length:   4,
+			MaxSkew:  0.50,
+			DotCount: 200,
+			InDate:   5,
 		},
 	}
 }

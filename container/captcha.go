@@ -10,9 +10,11 @@ import (
 //
 // 返回值：
 // *captcha.Captcha: 返回一个指向 captcha.Captcha 类型的指针。
-func (c *Container) Captcha() *captcha.Captcha {
+func (c *Container) Captcha() (cap *captcha.Captcha, err error) {
 	// 获取到缓存的连接。
 	var rdx = c.Config.Cache.Connection()
+	err = rdx.Ping().Err()
 	// 使用缓存连接和验证码配置创建并返回一个新的验证码实例。
-	return captcha.NewCaptcha(c.Config.Captcha, rdx, 5)
+	cap = captcha.NewCaptcha(c.Config.Captcha, rdx)
+	return
 }
