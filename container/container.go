@@ -10,7 +10,7 @@ import (
 type Container struct {
 	Events  *task.Events
 	Crontab *task.Crontab
-	Config  *config.Config
+	Config  config.Config
 	
 	cache *cache.Cache
 	group *cache.Group

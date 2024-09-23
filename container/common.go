@@ -7,7 +7,7 @@ import (
 
 func New(config config.Config) Container {
 	return Container{
-		Config:  &config,
+		Config:  config,
 		Crontab: &task.Crontab{},
 		Events:  &task.Events{},
 	}
