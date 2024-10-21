@@ -10,6 +10,7 @@ import (
 	`github.com/chaodoing/boot/config`
 	`github.com/chaodoing/boot/container`
 	`github.com/chaodoing/boot/o`
+	`github.com/go-redis/redis`
 	`github.com/kataras/iris/v12`
 	`github.com/kataras/iris/v12/hero`
 	`github.com/kataras/iris/v12/middleware/logger`
@@ -25,6 +26,7 @@ type (
 		config     iris.Configuration
 		env        config.Config
 		db         *gorm.DB
+		rdx        *redis.Client
 		cache      *cache.Cache
 		group      *cache.Group
 	}
@@ -38,7 +40,7 @@ type (
 	// - db: *gorm.DB 类型，代表数据库连接对象，用于数据库操作。
 	// - jwt: *container.Jwt 类型，是JWT认证相关的配置和处理逻辑，确保请求的合法性。
 	// 注意，该函数没有返回值，因为它直接修改app实例的状态，而不是通过返回值来表达结果。
-	Handle func(app *iris.Application, containers container.Container, db *gorm.DB, jwt *container.Jwt)
+	Handle func(app *iris.Application, containers container.Container, db *gorm.DB, rdx *redis.Client, jwt *container.Jwt)
 )
 
 // New 创建一个新的应用启动配置
@@ -57,10 +59,8 @@ func New(file string) Launch {
 		env config.Config
 		err error
 	)
-	
 	// 解析配置文件路径中的环境变量
 	file = os.ExpandEnv(file)
-	
 	// 根据配置文件的扩展名解析配置
 	exts := strings.Split(file, ".")
 	switch exts[len(exts)-1] {
@@ -71,59 +71,46 @@ func New(file string) Launch {
 	case "xml":
 		env, err = config.Xml(file)
 	}
-	
 	// 如果配置加载失败，则抛出异常
 	if err != nil {
 		panic(err)
 	}
-	
 	// 加载环境变量到配置中
 	env = env.LoadEnv()
-	
 	// 初始化容器
 	dock := container.New(env)
-	
 	// 获取数据库实例
 	db, err := dock.Database()
 	if err != nil {
 		panic(err)
 	}
-	
 	// 获取缓存实例
 	caching, err := dock.Cache()
 	if err != nil {
 		panic(err)
 	}
-	
 	// 获取分组实例
 	group, err := dock.Group()
 	if err != nil {
 		panic(err)
 	}
-	
 	// 注册容器内的服务
 	hero.Register(dock)
-	
 	// 初始化 Iris 框架
 	app := iris.New()
-	
 	// 使用全局中间件
 	app.UseGlobal(iris.Compression)
 	app.UseRouter(recover.New())
 	app.UseRouter(logger.New())
-	
 	// 注册依赖项
 	app.RegisterDependency(dock, db, caching, group)
-	
 	// 处理路由
 	o.Handle(app)
-	
 	// 配置跨域
 	if env.Service.Cross {
 		app.AllowMethods(iris.MethodOptions)
 		app.UseRouter(container.Cors)
 	}
-	
 	// 配置日志输出
 	var writer io.Writer
 	writer, err = env.Service.Logger.Writer()
@@ -131,13 +118,13 @@ func New(file string) Launch {
 		panic(err)
 	}
 	app.Logger().SetOutput(writer).SetLevel(env.Service.Logger.IrisLevel())
-	
 	// 返回应用启动实例
 	return Launch{
 		app:        app,
 		containers: dock,
 		env:        env,
 		db:         db,
+		rdx:        dock.Redis(),
 		cache:      caching,
 		group:      group,
 	}
@@ -187,7 +174,7 @@ func (l Launch) Handle(values ...Handle) Launch {
 	for _, fn := range values {
 		// 调用每一个函数，并传递Launch实例的app、containers、db以及JWT令牌给它们
 		// 这允许每个函数对这些资源执行特定的初始化或处理逻辑
-		fn(l.app, l.containers, l.db, l.containers.Jwt())
+		fn(l.app, l.containers, l.db, l.rdx, l.containers.Jwt())
 	}
 	// 返回Launch实例本身，支持链式调用
 	return l

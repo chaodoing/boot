@@ -4,6 +4,7 @@ import (
 	`github.com/chaodoing/boot/cache`
 	`github.com/chaodoing/boot/config`
 	`github.com/chaodoing/boot/task`
+	`github.com/go-redis/redis`
 	`gorm.io/gorm`
 )
 
@@ -16,4 +17,5 @@ type Container struct {
 	group *cache.Group
 	jwt   *Jwt
 	db    *gorm.DB
+	rdx   *redis.Client
 }

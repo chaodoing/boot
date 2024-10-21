@@ -4,6 +4,7 @@ import (
 	`time`
 	
 	`github.com/chaodoing/boot/cache`
+	`github.com/go-redis/redis`
 	`gorm.io/gorm`
 )
 
@@ -28,22 +29,42 @@ func (c *Container) Database() (*gorm.DB, error) {
 	return c.db, err
 }
 
+// Redis 返回 Container 实例中的 Redis 客户端。
+// 如果 Redis 客户端尚未初始化，则会根据配置信息进行初始化。
+// 这个方法确保了 Redis 客户端的延迟加载和单一实例特性，
+// 从而提高资源利用率和性能。
+func (c *Container) Redis() *redis.Client {
+	// 检查是否已经存在初始化的 Redis 客户端
+	if c.rdx != nil {
+		return c.rdx
+	}
+	// 初始化 Redis 客户端并返回
+	c.rdx = c.Config.Cache.Connection()
+	return c.rdx
+}
+
 // Cache 返回缓存实例。如果缓存实例已经存在，则直接返回，否则根据配置信息创建一个新的缓存实例。
 func (c *Container) Cache(prefixes ...string) (Cache *cache.Cache, err error) {
-	if c.cache != nil {
+	if c.cache != nil && c.rdx != nil {
 		return c.cache, nil
 	}
-	c.cache, err = cache.New(&c.Config.Cache, prefixes...)
+	if c.rdx == nil {
+		c.rdx = c.Config.Cache.Connection()
+	}
+	c.cache, err = cache.New(c.rdx, prefixes...)
 	_ = c.Events.Trigger(`cache`, c.cache, err)
 	return c.cache, err
 }
 
 // Group 返回缓存组实例。如果缓存组实例已经存在，则直接返回，否则根据配置信息创建一个新的缓存组实例。
 func (c *Container) Group(name ...string) (Group *cache.Group, err error) {
-	if c.group != nil {
+	if c.group != nil && c.rdx != nil {
 		return c.group, nil
 	}
-	c.group, err = cache.NewGroup(&c.Config.Cache, name...)
+	if c.rdx == nil {
+		c.rdx = c.Config.Cache.Connection()
+	}
+	c.group, err = cache.NewGroup(c.rdx, name...)
 	_ = c.Events.Trigger(`group`, c.group, err)
 	return c.group, err
 }

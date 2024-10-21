@@ -16,7 +16,8 @@ func TestGroup(t *testing.T) {
 		Index:    0,
 		TTL:      0,
 	}
-	g, err := cache.NewGroup(&config, "cache-group", "authorized")
+	rdx := config.Connection()
+	g, err := cache.NewGroup(rdx, "cache", "group")
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,5 +31,7 @@ func TestGroup(t *testing.T) {
 		t.Error(err)
 	}
 	t.Log(string(j))
-	t.Log(g.Get("test_key_1"))
+	if err = g.Clear(); err != nil {
+		t.Error(err)
+	}
 }

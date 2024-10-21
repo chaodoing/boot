@@ -1,7 +1,6 @@
 package cache
 
 import (
-	`errors`
 	`fmt`
 	`strings`
 	`time`
@@ -11,9 +10,8 @@ import (
 
 // Cache 是一个基于 Redis 的缓存结构体，包含 Redis 配置、Redis 客户端和键前缀。
 type Cache struct {
-	redisConfig *Config
-	rdx         *redis.Client
-	prefix      string
+	rdx    *redis.Client
+	prefix string
 }
 
 // All 返回当前分组下所有键值对。
@@ -26,15 +24,6 @@ func (g *Cache) All() map[string]string {
 		result[strings.TrimPrefix(name, key)] = g.rdx.Get(name).Val()
 	}
 	return result
-}
-
-// redis 用于初始化 Redis 连接，并检查连接是否成功。
-func (c *Cache) redis() error {
-	c.rdx = c.redisConfig.Connection()
-	if c.rdx == nil {
-		return errors.New("redis connection error")
-	}
-	return c.rdx.Ping().Err()
 }
 
 // Set 用于设置缓存值。key 为缓存键，value 为缓存值，ttl 为可选的缓存过期时间（秒）。
