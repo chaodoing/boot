@@ -9,6 +9,6 @@ func New(config config.Config) Container {
 	return Container{
 		Config:  config,
 		Crontab: task.NewCrontab(),
-		Events:  &task.Events{},
+		Events:  task.NewEvent(),
 	}
 }
