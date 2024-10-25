@@ -68,3 +68,19 @@ func (c *Container) Group(name ...string) (Group *cache.Group, err error) {
 	_ = c.Events.Trigger(`group`, c.group, err)
 	return c.group, err
 }
+
+// Attestation 用户数据认证
+func (c *Container) Attestation(prefix string) (a Attestation, err error) {
+	var rdx *redis.Client
+	rdx = c.Redis()
+	if err = rdx.Ping().Err(); err != nil {
+		return
+	}
+	prefix = prefix + ":"
+	var ttl = time.Duration(c.Config.Cache.TTL) * time.Second
+	return Attestation{
+		rdx:        rdx,
+		timeToLive: ttl,
+		prefix:     prefix,
+	}, nil
+}
