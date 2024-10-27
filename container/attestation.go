@@ -24,6 +24,15 @@ type (
 	}
 )
 
+var HeaderKeys = []string{
+	"Authorization",
+	"Access-Token",
+	"Token",
+	"X-Websocket-Header-Authorization",
+	"X-Websocket-Header-Token",
+	"X-Websocket-Header-Access-Token",
+}
+
 func trim(s string) string {
 	return strings.TrimPrefix(strings.TrimPrefix(s, Basic), Bearer)
 }
@@ -41,11 +50,13 @@ func (a Attestation) token() (token string) {
 
 // current 当前认证字符串
 func (a Attestation) current(ctx iris.Context) (token string) {
-	if token = ctx.GetHeader("Access-Token"); !strings.EqualFold(token, "") {
-		token = trim(token)
-	}
-	if token = ctx.GetHeader("Authorization"); !strings.EqualFold(token, "") {
-		token = trim(token)
+	for _, key := range HeaderKeys {
+		if token = ctx.GetHeader(key); !strings.EqualFold(token, "") {
+			return trim(token)
+		}
+		if token = ctx.URLParam(key); !strings.EqualFold(token, "") {
+			return trim(token)
+		}
 	}
 	return
 }
