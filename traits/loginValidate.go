@@ -8,17 +8,17 @@ import (
 // LoginValidate 结构体代表登录验证功能，其中的 PasswordValidate 方法用于验证密码的有效性。
 type LoginValidate struct {
 	Username string `json:"username" xml:"username" validate:"required"`
-	Password string `json:"password" xml:"password" validate:"passwordValidate"`
+	Password string `json:"password" xml:"password" validate:"ValidatePassword"`
 }
 
-// PasswordValidate 方法用于验证给定的密码是否有效。
+// ValidatePassword 方法用于验证给定的密码是否有效。
 // 该方法调用了一个独立的验证方法（method.PasswordValidate）来执行实际的验证逻辑。
 // 参数:
 //   value string: 待验证的密码字符串。
 // 返回值:
 //   bool: 如果密码有效，则返回true；否则返回false。
-func (l LoginValidate) PasswordValidate(value string) bool {
-	return method.PasswordValidate(value)
+func (l LoginValidate) ValidatePassword(value string) bool {
+	return method.ValidatePassword(value)
 }
 
 // ConfigValidation 配置验证规则

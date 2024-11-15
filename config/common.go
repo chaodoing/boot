@@ -6,8 +6,8 @@ import (
 	`os`
 	`strings`
 	
+	`github.com/chaodoing/boot/auth/captcha`
 	`github.com/chaodoing/boot/cache`
-	`github.com/chaodoing/boot/captcha`
 	`github.com/chaodoing/boot/database`
 	`github.com/chaodoing/boot/logger`
 	`github.com/gookit/goutil/fsutil`

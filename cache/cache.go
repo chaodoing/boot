@@ -16,12 +16,12 @@ type Cache struct {
 
 // All 返回当前分组下所有键值对。
 // 它通过匹配前缀来获取键值，并移除键的前缀以得到最终的结果。
-func (g *Cache) All() map[string]string {
+func (c *Cache) All() map[string]string {
 	var result = map[string]string{}
-	names := g.rdx.Keys(fmt.Sprintf("%s:*", g.prefix)).Val()
-	key := fmt.Sprintf("%s:", g.prefix)
+	names := c.rdx.Keys(fmt.Sprintf("%s:*", c.prefix)).Val()
+	key := fmt.Sprintf("%s:", c.prefix)
 	for _, name := range names {
-		result[strings.TrimPrefix(name, key)] = g.rdx.Get(name).Val()
+		result[strings.TrimPrefix(name, key)] = c.rdx.Get(name).Val()
 	}
 	return result
 }
